@@ -1,153 +1,167 @@
 
 backgrounds = {};
+var obstacles;
 
 function background(layerName, velocity) {
-	if (backgrounds[layerName]) {
-		var background = backgrounds[layerName];
-		if (velocity != undefined) background.velocity = velocity;
-		return background;
-	}
-	return new Background(layerName, velocity);
+    if (backgrounds[layerName]) {
+        var background = backgrounds[layerName];
+        if (velocity != undefined) background.velocity = velocity;
+        return background;
+    }
+    return new Background(layerName, velocity);
 }
 
 function sign(number) {
-	// Math.sign is not present in Internet Explorer.
-	// We define this here so it works everywhere.
-	if (number < 0) {
-	        return -1;
-	} else if (number > 0) {
-        	return  1;
-	} else if (number == 0) {
-        	return  0;
-	}
-	return null;
+    // Math.sign is not present in Internet Explorer.
+    // We define this here so it works everywhere.
+    if (number < 0) {
+        return -1;
+    } else if (number > 0) {
+        return  1;
+    } else if (number == 0) {
+        return  0;
+    }
+    return null;
 }
 
 function Background(layerName, velocity) {
-	this.layerName = layerName;
-	this.layer = layerNamed(layerName);
-	this.position = gameObject(this.layer);
-	this.velocity = velocity;
-	this.direction = sign(this.velocity)
-	this.width = widthOfLayer(this.layer);
-	this.action = new Action(function() { this.move() }, function() { this.started() });
+    this.layerName = layerName;
+    this.layer = layerNamed(layerName);
+    this.position = gameObject(this.layer);
+    this.velocity = velocity;
+    this.direction = sign(this.velocity)
+    this.width = widthOfLayer(this.layer);
+    var me = this;
+    this.action = new Action(function(){me.move()}, function(){me.started()});
 
-	backgrounds[this.layerName] = this;
+    backgrounds[this.layerName] = this;
 }
 
 Background.prototype = {
-	startMoving : function() {
-        	this.action.start();
-	},
-	stopMoving : function() {
-        	this.action.stop();
-	},
-	move : function() {
-        	var x = this.position.x;
-	        x += this.velocity;
-        	if (x * this.direction > this.width) {
-	            x -= this.direction * this.width;
-        	}
-	        this.position.x = x;
-    	},
-	started : function() {
-		this.position.x = 0;
-	},
-	show : function() {
-		this.position.show();
-	},
-	hide : function() {
-		this.position.hide();
-	},
-	isVisible : function() {
-		return this.position.isVisible();
-	}
+    startMoving : function() {
+        this.action.start();
+    },
+    stopMoving : function() {
+        this.action.stop();
+    },
+    move : function() {
+        var x = this.position.x;
+        x += this.velocity;
+        if (x * this.direction > this.width) {
+            x -= this.direction * this.width;
+        }
+        this.position.x = x;
+    },
+    started : function() {
+        this.position.x = 0;
+    },
+    show : function() {
+        this.position.show();
+    },
+    hide : function() {
+        this.position.hide();
+    },
+    isVisible : function() {
+        return this.position.isVisible();
+    }
 }
 
 function startMovingBackgound(name, velocity) {
-	var bg = background(name, velocity);
-	if (bg.isVisible()) bg.startMoving();
+    var bg = background(name, velocity);
+    if (bg.isVisible()) {
+        bg.startMoving();
+    }
 }
 
 function stopMovingBackgound(name) {
-	background(name).stopMoving();
+    background(name).stopMoving();
 }
 
 function stopAllBackgrounds(){
-	for(var characters in backgrounds) {
-		stopMovingBackgound(characters);
-	}
-	flappy.stopFlapping();
+    for(var characters in backgrounds) {
+    	stopMovingBackgound(characters);
+    }
+    flappy.stopFlapping();
 }
 
 function backgroundChange(layer){
 	desertHide()
 	islandHide()
 	gothamHide()
-	spaceHide()
+  spaceHide()
 	snowHide()
-	seaHide()
+  seaHide()
 	evilHide()
-	binaryHide();
-	switch(layer) {
-		case 'background':
-			desertShow()
-		case 'Island':
-			islandShow()
-		case 'Gotham':
-			gothamShow()
-		case 'space':
-			spaceShow()
-		case 'Snow':
-			snowShow()
-		case 'Sea':
-			seaShow()
-		case 'binarybg':
-			binaryShow()
-		case 'Evil'
-			evilShow()
-		default:
-			break
+  binaryHide();
+	if (layer =='background'){
+		desertShow()
+	}
+
+	if (layer =='Island'){
+		islandShow()
+	}
+
+	if (layer =='Gotham'){
+		gothamShow()
+	}
+
+    if (layer =='space'){
+        spaceShow()
+    }
+	if (layer =='Snow'){
+    snowShow()
+	}
+  if (layer =='Sea'){
+      seaShow()
+  }
+  if (layer == "binarybg") {
+      binaryShow()
+  }
+	if (layer =='Evil'){
+		evilShow();
 	}
 }
 
 function desertShow(){
-	show_layer('cactus');
-	show_layer('DayAndNight');
-	show_layer('background');
-	show_layer('SunAndMoon');
-	show_layer('sky');
-	createObstacles("cactus");
+    show_layer('cactus');
+    show_layer('DayAndNight');
+    show_layer('background');
+    show_layer('SunAndMoon');
+    show_layer('sky');
+
+    createObstacles("cactus");
 }
 
 function desertHide(){
-	hide_layer('cactus');
-	hide_layer('DayAndNight');
-	hide_layer('background');
-	hide_layer('SunAndMoon');
-	hide_layer('sky');
+        hide_layer('cactus');
+        hide_layer('DayAndNight');
+        hide_layer('background');
+        hide_layer('SunAndMoon');
+        hide_layer('sky');
 }
 
 function islandShow(){
-	show_layer('Island');
-	show_layer('thunder');
-	createObstacles("thunder");
+        show_layer('Island');
+        show_layer('thunder');
+
+        createObstacles("thunder");
 }
 
 function islandHide(){
-	hide_layer('Island');
-	hide_layer('thunder');
+        hide_layer('Island');
+        hide_layer('thunder');
 }
 
 function gothamShow(){
-	show_layer('Gotham');
-	show_layer('Gotham_obstacles');
-	createObstacles("Gotham_obstacles");
+        show_layer('Gotham');
+        show_layer('Gotham_obstacles');
+
+        createObstacles("Gotham_obstacles");
 }
 
 function gothamHide(){
-	hide_layer('Gotham');
-	hide_layer('Gotham_obstacles');
+        hide_layer('Gotham');
+        hide_layer('Gotham_obstacles');
 }
 
 function spaceShow(){
